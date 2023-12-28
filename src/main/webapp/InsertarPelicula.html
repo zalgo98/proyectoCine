@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
+-->
+<html>
+    <head>
+        <title>Formulario para Insertar Película</title>
+    </head>
+    <body>
+        <h1>Insertar Película</h1>
+        <form action="GestionPeliculasServlet.java" method="post">
+            Nombre de Película: <input type="text" name="nombre_pelicula" required><br>
+            Sinopsis: <input type="text" name="sinopsis"><br>
+            paginaOficial:<input type="text" name="pagina oficial"><br>
+            tituloOriginal:<input type="text" name="titulo original"><br>
+            genero:<input type="text" name="genero"><br>
+            nacionalidad:<input type="text" name="nacionalidad"><br>
+            duracion:<input type="number" name="duracion" min="0" max="300"><br>
+            año:<input type="number" name="año" min="1800" max="3000"><br>
+            distribuidora:<input type="text" name="distribuidora"><br>
+            director:<input type="text" name="director"><br>
+            actores:<input type="text" name="actores"><br>
+            Clasificación de Edad:
+            <select name="clasificacion_edad">
+                <option value="TP">TP</option>
+                <option value="+13">+13</option>
+                <option value="+16">+16</option>
+                <option value="+18">+18</option>
+            </select><br>
+            otrosDatos:<input type="text" name="sinopsis"><br>
+
+            <input type="submit" value="Insertar Película">
+        </form>
+    </body>
+</html>
