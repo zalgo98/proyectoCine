@@ -23,21 +23,24 @@ import java.util.logging.Logger;
  *
  * @author gonzalo
  */
-@WebServlet("/insertarPelicula")
+@WebServlet(urlPatterns = {"/GestionPeliculasServlet"})
 public class GestionPeliculasServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private Connection conn;
 
+    @Override
     public void init() throws ServletException {
         try {
             Class.forName("org.apache.derby.jdbc.ClientDriver");
-            conn = (Connection) DriverManager.getConnection("jdbc:derby://localhost:1527/sample", "app", "app");
+            this.conn = DriverManager.getConnection("jdbc:derby://localhost:1527/sample","app", "app");
+            
         } catch (Exception e) {
             throw new ServletException("Error de inicialización: " + e.getMessage());
         }
     }
 
+    @Override
     public void destroy() {
         try {
             conn.close();
@@ -46,11 +49,13 @@ public class GestionPeliculasServlet extends HttpServlet {
         }
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
         String nombrePelicula = request.getParameter("nombre_pelicula");
         String sinopsis = request.getParameter("sinopsis");
-        String paginaOficial = request.getParameter("pagina oficial");
-        String tituloOriginal = request.getParameter("titulo original");
+        String paginaOficial = request.getParameter("pagina_oficial");
+        String tituloOriginal = request.getParameter("titulo_original");
         String genero = request.getParameter("genero");
         String nacionalidad = request.getParameter("nacionalidad");
         String duracion = request.getParameter("duracion");
@@ -62,9 +67,9 @@ public class GestionPeliculasServlet extends HttpServlet {
         String otrosDatos = request.getParameter("otrosDatos");
 
         try {
-            String query = "INSERT INTO Peliculas (nombre_pelicula, sinopsis, pagina_oficial, titulo_original, genero, nacionalidad, duracion, anio, distribuidora, director, actores, clasificacion_edad, otros_datos) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO Peliculas (nombre_pelicula, sinopsis, pagina_oficial, titulo_original, genero, nacionalidad, duracion, anio, distribuidora, director, actores, clasificacion_edad, otrosDatos) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            try (PreparedStatement statement = conn.prepareStatement(query)) {
+            try (PreparedStatement statement = this.conn.prepareStatement(query)) {
                 statement.setString(1, nombrePelicula);
                 statement.setString(2, sinopsis);
                 statement.setString(3, paginaOficial);

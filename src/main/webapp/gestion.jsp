@@ -12,7 +12,7 @@
         <title>Gestion del cine</title>
     </head>
     <body>
-        <button onclick="window.location.href = 'InsertarPelicula.html';">Insertar pelicula</button>
+        <button onclick="window.location.href = 'insertarPelicula.jsp';">Insertar pelicula</button>
         
     </body>
 </html>

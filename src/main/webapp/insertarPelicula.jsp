@@ -1,8 +1,11 @@
+<%-- 
+    Document   : insertarPelicula
+    Created on : 29 dic 2023, 12:34:37
+    Author     : gonzalo
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
--->
 <html>
     <head>
         <title>Formulario para Insertar Película</title>
@@ -17,7 +20,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
             genero:<input type="text" name="genero"><br>
             nacionalidad:<input type="text" name="nacionalidad"><br>
             duracion:<input type="number" name="duracion" min="0" max="300"><br>
-            año:<input type="number" name="año" min="1800" max="3000"><br>
+            año: <input type="text" name="año" pattern="[0-9]{4}" title="Ingrese un año válido (entre 1800 y 3000)" required><br>
+
             distribuidora:<input type="text" name="distribuidora"><br>
             director:<input type="text" name="director"><br>
             actores:<input type="text" name="actores"><br>
