@@ -27,9 +27,9 @@
             <div class="col-md-4">
                 <h2>Gestión de Salas</h2>
                 <button type="button" onclick="window.location.href = 'insertarSala.jsp';">Insertar</button>
-                <button type="button" class="btn btn-danger">Borrar</button>
+                <button type="button" onclick="window.location.href = 'BorrarSala.jsp';">Borrar</button>
                 <button type="button" class="btn btn-warning">Modificar</button>
-                <button type="button" class="btn btn-info">Consultar</button>
+                <button type="button" onclick="window.location.href = 'consultarSala.jsp';">Consultar</button>
             </div>
             <div class="col-md-4">
                 <h2>Gestión de Entradas</h2>
