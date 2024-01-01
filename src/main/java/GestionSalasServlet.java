@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  * @author gonzalo
  */
 @WebServlet(urlPatterns = {"/GestionPeliculasServlet"})
-public class GestionPeliculasServlet extends HttpServlet {
+public class GestionSalasServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private Connection conn;

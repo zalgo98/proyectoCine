@@ -13,20 +13,19 @@
     <body>
         <h1>Insertar Pelicula</h1>
         <form action="GestionPeliculasServlet" method="post">
-            Nombre de Pelicula: <input type="text" name="nombre_pelicula" required><br>
+            Nombre de Pelicula: <input type="text" name="nombrepelicula" required><br>
             Sinopsis: <input type="text" name="sinopsis"><br>
-            pagina Oficial:<input type="text" name="pagina_oficial"><br>
-            titulo Original:<input type="text" name="titulo_original"><br>
+            pagina Oficial:<input type="text" name="paginaoficial"><br>
+            titulo Original:<input type="text" name="titulooriginal"><br>
             genero:<input type="text" name="genero"><br>
             nacionalidad:<input type="text" name="nacionalidad"><br>
             duracion:<input type="number" name="duracion" min="0" max="300"><br>
-            año: <input type="text" name="año" pattern="[0-9]{4}" title="Ingrese un año válido (entre 1800 y 3000)" required><br>
-
+            año:<input type="number" name="anno" min="1800" max="3000"><br>
             distribuidora:<input type="text" name="distribuidora"><br>
             director:<input type="text" name="director"><br>
             actores:<input type="text" name="actores"><br>
             Clasificacion de Edad:
-            <select name="clasificacion_edad">
+            <select name="clasificacionedad">
                 <option value="TP">TP</option>
                 <option value="+13">+13</option>
                 <option value="+16">+16</option>
@@ -36,5 +35,11 @@
 
             <input type="submit" value="Insertar Pelicula">
         </form>
+        <button onclick="irAtras()">Atrás</button>
+        <script>
+            function irAtras() {
+            window.location.href = 'gestion.jsp';
+        }
+        </script>
     </body>
 </html>
