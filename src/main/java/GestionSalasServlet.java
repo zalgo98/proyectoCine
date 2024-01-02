@@ -143,10 +143,14 @@ private boolean verificarExistenciaPelicula(Connection conn, String nombrePelicu
     
 
    @Override
-protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    String numeroSala = request.getParameter("numeroSala"); // Suponiendo que obtienes el número de sala desde la solicitud
+
+public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String numeroSala = request.getParameter("numeroSala");
 
     try {
+        Class.forName("org.apache.derby.jdbc.ClientDriver");
+        Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/sample", "app", "app");
+
         PreparedStatement statement = conn.prepareStatement("DELETE FROM Salas WHERE numero_sala = ?");
         statement.setString(1, numeroSala);
         int deletedRows = statement.executeUpdate();
@@ -157,7 +161,9 @@ protected void doDelete(HttpServletRequest request, HttpServletResponse response
         } else {
             response.getWriter().write("La sala no se encontró o no se pudo eliminar");
         }
-    } catch (SQLException e) {
+
+        conn.close(); // Cierra la conexión
+    } catch (ClassNotFoundException | SQLException e) {
         throw new ServletException("Error al eliminar sala: " + e.getMessage());
     }
 }

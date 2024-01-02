@@ -8,12 +8,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  *
@@ -21,97 +24,63 @@ import java.sql.SQLException;
  */
 @WebServlet(urlPatterns = {"/prueba"})
 public class prueba extends HttpServlet {
+private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 1L;
-    private Connection conn;
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    public void init() throws ServletException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
         try {
             Class.forName("org.apache.derby.jdbc.ClientDriver");
-            this.conn = (Connection) DriverManager.getConnection("jdbc:derby://localhost:1527/sample", "app", "app");
+            connection = DriverManager.getConnection("jdbc:derby://localhost:1527/sample", "app", "app");
 
-        } catch (Exception e) {
-            throw new ServletException("Error de inicialización: " + e.getMessage());
-        }
-    }
+            String query = "SELECT * FROM usuarios WHERE usuario = ? AND contraseña = ?";
+            statement = connection.prepareStatement(query);
+            statement.setString(1, username);
+            statement.setString(5, password);
+            resultSet = statement.executeQuery();
 
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet prueba</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet prueba at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
+            if (resultSet.next()) {
+                PreparedStatement adminStatement = null;
+                ResultSet adminResultSet = null;
+                boolean isAdmin = false;
+                try {
+                    String adminQuery = "SELECT * FROM administracion WHERE usuario = ?";
+                    adminStatement = connection.prepareStatement(adminQuery);
+                    adminStatement.setString(1, username);
+                    adminResultSet = adminStatement.executeQuery();
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-    }
+                    isAdmin = adminResultSet.next();
+                } finally {
+                    if (adminResultSet != null) adminResultSet.close();
+                    if (adminStatement != null) adminStatement.close();
+                }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        try {
-            String query = "INSERT INTO administracion (nombre_pelicula)values(?)";
-
-            try (PreparedStatement statement = this.conn.prepareStatement(query)) {
-
-                statement.executeUpdate();
+                if (isAdmin) {
+                    response.sendRedirect("gestion.jsp");
+                } else {
+                    HttpSession session = request.getSession();
+                    session.setAttribute("username", username);
+                    response.sendRedirect("index.html");
+                }
+            } else {
+                response.sendRedirect("inicioSesion.jsp");
             }
-
-            response.sendRedirect("gestion.jsp");
-        } catch (SQLException e) {
-            throw new ServletException("Error en la inserción de película: " + e.getMessage());
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (statement != null) statement.close();
+                if (connection != null) connection.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }
+
