@@ -50,19 +50,19 @@
 </head>
 <body>
     <div class="container">
-        <h1>Consulta de Salas</h1>
-        <table id="salasTable">
-            <!-- Aquí se cargarán dinámicamente los datos de las películas -->
+        <h1>Consulta de Entradas</h1>
+        <table id="entradasTable">
+            <!-- Aquí se cargarán dinámicamente los datos de las entradas -->
         </table>
     </div>
 
     <script>
         window.onload = function() {
-            obtenerSalas);
+            obtenerEntradas();
         };
 
-        function obtenerSalas) {
-            fetch('GestionSalasServlet')
+        function obtenerEntradas() {
+            fetch('GestionEntradasServlet')
                 .then(response => {
                     if (response.ok) {
                         return response.text();
@@ -70,10 +70,10 @@
                     throw new Error('Error en la respuesta del servidor');
                 })
                 .then(data => {
-                    const salasTable = document.getElementById('salasTable');
-                    salasTable.innerHTML = data;
+                    const entradasTable = document.getElementById('entradasTable');
+                    entradasTable.innerHTML = data;
                 })
-                .catch(error => console.error('Error al obtener salass:', error));
+                .catch(error => console.error('Error al obtener entradas:', error));
         }
     </script>
 </body>
