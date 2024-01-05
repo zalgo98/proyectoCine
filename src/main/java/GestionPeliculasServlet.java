@@ -4,15 +4,15 @@
  */
 import java.sql.Connection;
 
-import jakarta.jms.JMSException;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
+
 import java.io.IOException;
-import java.io.PrintWriter;
+
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -121,6 +121,44 @@ public class GestionPeliculasServlet extends HttpServlet {
         response.getWriter().write("<table>" + peliculasHTML.toString() + "</table>");
     } catch (SQLException e) {
         throw new ServletException("Error al obtener películas: " + e.getMessage());
+    }
+}
+protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String nombrePelicula = request.getParameter("nombrepelicula");
+    // Obtener los demás parámetros necesarios para la película
+
+    try {
+        // Query SQL para actualizar los datos de la película en la base de datos
+        String query = "UPDATE Peliculas SET sinopsis=?, paginaoficial=?, titulooriginal=?, genero=?, nacionalidad=?, duracion=?, anno=?, distribuidora=?, director=?, actores=?, clasificacionedad=?, otrosDatos=? WHERE nombrepelicula=?";
+
+        try (PreparedStatement statement = this.conn.prepareStatement(query)) {
+            // Establecer los valores de los parámetros para la actualización
+            statement.setString(1, request.getParameter("sinopsis"));
+            statement.setString(2, request.getParameter("paginaoficial"));
+            statement.setString(3, request.getParameter("titulooriginal"));
+            statement.setString(4, request.getParameter("genero"));
+            statement.setString(5, request.getParameter("nacionalidad"));
+            statement.setString(6, request.getParameter("duracion"));
+            statement.setInt(7, Integer.parseInt(request.getParameter("anno")));
+            statement.setString(8, request.getParameter("distribuidora"));
+            statement.setString(9, request.getParameter("director"));
+            statement.setString(10, request.getParameter("actores"));
+            statement.setString(11, request.getParameter("clasificacionedad"));
+            statement.setString(12, request.getParameter("otrosDatos"));
+            statement.setString(13, nombrePelicula); // Usamos el nombre para identificar la película a actualizar
+
+            // Ejecutar la actualización
+            int updatedRows = statement.executeUpdate();
+
+            // Manejar la respuesta según el resultado de la actualización
+            if (updatedRows > 0) {
+                response.getWriter().write("Película actualizada: " + nombrePelicula);
+            } else {
+                response.getWriter().write("No se pudo actualizar la película");
+            }
+        }
+    } catch (SQLException | NumberFormatException e) {
+        throw new ServletException("Error al actualizar la película: " + e.getMessage());
     }
 }
 

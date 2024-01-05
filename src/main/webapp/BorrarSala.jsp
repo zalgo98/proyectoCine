@@ -36,7 +36,7 @@
                     const tableRows = htmlDocument.querySelectorAll('tr');
 
                     const select = document.getElementById('sala');
-                    select.innerHTML = '';
+                    select.innerHTML = '<option value=""> </option>';
 
                     for (let i = 1; i < tableRows.length; i++) {
                         const columns = tableRows[i].querySelectorAll('td');
@@ -48,7 +48,7 @@
                         }
                     }
                 })
-                .catch(error => console.error('Error al obtener sala: ', error));
+                .catch(error => console.error('Error al obtener salas: ', error));
         }
 
 

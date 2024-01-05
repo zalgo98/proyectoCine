@@ -36,7 +36,7 @@
                 <button type="button" onclick="window.location.href = 'insertarEntrada.jsp';">Insertar</button>
                 <button type="button" onclick="window.location.href = 'BorrarEntrada.jsp';">Borrar</button>
                 <button type="button" class="btn btn-warning">Modificar</button>
-                <button type="button" onclick="window.location.href = 'consultarEntrada.jsp'">Consultar</button>
+                <button type="button" onclick="window.location.href = 'consultarEntradas.jsp'">Consultar</button>
             </div>
         </div>
         <div class="row">
