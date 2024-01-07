@@ -216,6 +216,7 @@ public class GestionEntradasServlet extends HttpServlet {
         }
     }
 
+    @Override
     public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String idEntrada = request.getParameter("idEntrada");
 
@@ -229,13 +230,15 @@ public class GestionEntradasServlet extends HttpServlet {
 
                 response.setContentType("text/plain");
                 if (deletedRows > 0) {
-                    response.getWriter().write("Entrada eliminada con ID: " + idEntrada);
-                } else {
-                    response.getWriter().write("La entrada no se encontró o no se pudo eliminar");
-                }
+                response.getWriter().write("Entrada eliminada con ID: " + idEntrada);
+            } else {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Establecer código de estado 400 Bad Request
+                response.getWriter().write("La entrada no se encontró o no se pudo eliminar");
             }
-        } catch (SQLException e) {
-            throw new ServletException("Error al eliminar entrada: " + e.getMessage());
         }
+    } catch (SQLException e) {
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // Establecer código de estado 500 Internal Server Error
+        response.getWriter().write("Error al eliminar entrada: " + e.getMessage());
+    }
     }
 }

@@ -89,22 +89,28 @@ function mostrarInputEntrada() {
 function borrarEntrada() {
     const idEntrada = document.getElementById('idEntrada').value;
 
-    // Verificar si idEntrada no es nulo ni una cadena vacía
     if (idEntrada) {
         fetch(`GestionEntradasServlet?id_entrada=${idEntrada}`, {
             method: 'DELETE'
         })
-            .then(response => response.text())
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                }
+                throw new Error('No se pudo eliminar la entrada');
+            })
             .then(data => {
                 alert(data);
-                obtenerSalas();
+                obtenerEntradas(); // Actualizar la lista después de eliminar
             })
-            .catch(error => console.error('Error al borrar entrada por ID:', error));
+            .catch(error => {
+                console.error('Error al borrar entrada por ID:', error.message || error);
+            });
     } else {
-        console.error('El ID de entrada no es válido');
+        alert('Por favor, ingresa un ID de entrada válido');
     }
 }
-        function irAtras() {
+       function irAtras() {
             window.location.href = 'gestion.jsp';
         }
 

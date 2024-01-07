@@ -52,16 +52,16 @@
     <div class="container">
         <h1>Consulta de Salas</h1>
         <table id="salasTable">
-            <!-- Aquí se cargarán dinámicamente los datos de las películas -->
+            <!-- Aquí se cargarán dinámicamente los datos de las salas -->
         </table>
     </div>
 
     <script>
         window.onload = function() {
-            obtenerSalas);
+            obtenerSalas(); // Corregí el paréntesis faltante aquí
         };
 
-        function obtenerSalas) {
+  function obtenerSalas() {
             fetch('GestionSalasServlet')
                 .then(response => {
                     if (response.ok) {
@@ -70,10 +70,38 @@
                     throw new Error('Error en la respuesta del servidor');
                 })
                 .then(data => {
-                    const salasTable = document.getElementById('salasTable');
-                    salasTable.innerHTML = data;
+                    const parser = new DOMParser();
+                    const htmlDocument = parser.parseFromString(data, 'text/html');
+                    const tableRows = htmlDocument.querySelectorAll('tr');
+
+                    const table = document.getElementById('salasTable');
+                    table.innerHTML = ''; // Limpiar la tabla antes de cargar los datos
+
+                    // Agregar títulos de columna
+                    const columnHeaders = tableRows[0].querySelectorAll('th');
+                    const headerRow = document.createElement('tr');
+                    columnHeaders.forEach(header => {
+                        const headerCell = document.createElement('th');
+                        headerCell.textContent = header.textContent;
+                        headerRow.appendChild(headerCell);
+                    });
+                    table.appendChild(headerRow);
+
+                    // Agregar filas de datos
+                    for (let i = 1; i < tableRows.length; i++) {
+                        const columns = tableRows[i].querySelectorAll('td');
+                        if (columns.length > 0) {
+                            const row = document.createElement('tr');
+                            columns.forEach(column => {
+                                const cell = document.createElement('td');
+                                cell.textContent = column.textContent;
+                                row.appendChild(cell);
+                            });
+                            table.appendChild(row);
+                        }
+                    }
                 })
-                .catch(error => console.error('Error al obtener salass:', error));
+                .catch(error => console.error('Error al obtener salas: ', error));
         }
     </script>
 </body>
