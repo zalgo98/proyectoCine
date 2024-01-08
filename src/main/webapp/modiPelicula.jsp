@@ -39,7 +39,7 @@
         </select><br>
         Otros Datos:<input type="text" name="otrosDatos"><br>
 
-        <input type="submit" value="Insertar Pelicula">
+        <input type="submit" value="Modificar Pelicula">
     </form>
     <button onclick="irAtras()">Atrás</button>
     <script>

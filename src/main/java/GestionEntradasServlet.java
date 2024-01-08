@@ -4,30 +4,25 @@
  */
 import java.sql.Connection;
 
-import jakarta.jms.JMSException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
+
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+
 import java.sql.SQLException;
-import java.sql.Statement;
+
 import java.sql.Time;
-import java.sql.Timestamp;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -75,42 +70,62 @@ public class GestionEntradasServlet extends HttpServlet {
         LocalTime horaActual = LocalTime.now();
         Time timestamp = Time.valueOf(horaActual);
 
+        // Verificar si la entrada ya existe en la base de datos
+        boolean asientoAsignado;
         try {
-            // Verificar si la película existe en la tabla de películas y si la sala existe
-            boolean peliculaExiste = verificarExistenciaPelicula(this.conn, nombre_pelicula);
-            boolean salaExiste = verificarExistenciaSala(this.conn, numero_sala);
-            if (!peliculaExiste || !salaExiste) {
-                // Si la película no existe, se informa al cliente y se detiene el proceso
-                response.getWriter().write("Película o sala no encontrada en el cine");
-                return;
-            }
+             boolean peliculaExiste = verificarExistenciaPelicula(this.conn, nombre_pelicula);
+             boolean salaExiste = verificarExistenciaSala(this.conn, numero_sala);
+                  
+            asientoAsignado = verificarAsientoAsignado(this.conn, numero_sala, fila, columna);
 
-            // Verificar si ya existe una entrada con la misma fila y columna
-            boolean asientoAsignado = verificarAsientoAsignado(this.conn, numero_sala, fila, columna);
             if (asientoAsignado) {
-                // Si el asiento ya está asignado, informar al cliente y detener el proceso
-                response.getWriter().write("Asiento ya asignado");
-                return;
+
+                boolean modificacionExitosa = modificarEntrada(numero_sala, nombre_pelicula, fila, columna);
+
+                if (modificacionExitosa) {
+                    response.getWriter().write("La entrada se ha modificado");
+                    response.sendRedirect("gestion.jsp"); // Redireccionar a una página de gestión o mostrar un mensaje de éxito
+                } else {
+                    throw new ServletException("Error al modificar la entrada");
+                }
+            } else {
+                try {
+                    // Verificar si la película existe en la tabla de películas y si la sala existe
+                    if (!peliculaExiste || !salaExiste) {
+                        // Si la película no existe, se informa al cliente y se detiene el proceso
+                        response.getWriter().write("Película o sala no encontrada en el cine");
+                        return;
+                    }
+
+                    // Verificar si ya existe una entrada con la misma fila y columna
+                    if (asientoAsignado) {
+                        // Si el asiento ya está asignado, informar al cliente y detener el proceso
+                        response.getWriter().write("Asiento ya asignado");
+                        return;
+                    }
+
+                    String query = "INSERT INTO entradas (fecha, hora, numero_sala, fila, columna, nombre_pelicula) VALUES (?, ?, ?, ?, ?, ?)";
+
+                    try (PreparedStatement statement = this.conn.prepareStatement(query)) {
+                        statement.setDate(1, fechaSql);
+                        statement.setTime(2, timestamp);
+                        statement.setString(3, numero_sala);
+                        statement.setInt(4, fila);
+                        statement.setInt(5, columna);
+                        statement.setString(6, nombre_pelicula);
+
+                        statement.executeUpdate();
+                    }
+
+                    // Informar al cliente sobre la creación exitosa de la entrada
+                    response.getWriter().write("La entrada ha sido creada exitosamente");
+                    response.sendRedirect("gestion.jsp");
+                } catch (SQLException e) {
+                    throw new ServletException("Error en la inserción de entrada: " + e.getMessage());
+                }
             }
-
-            String query = "INSERT INTO entradas (fecha, hora, numero_sala, fila, columna, nombre_pelicula) VALUES (?, ?, ?, ?, ?, ?)";
-
-            try (PreparedStatement statement = this.conn.prepareStatement(query)) {
-                statement.setDate(1, fechaSql);
-                statement.setTime(2, timestamp);
-                statement.setString(3, numero_sala);
-                statement.setInt(4, fila);
-                statement.setInt(5, columna);
-                statement.setString(6, nombre_pelicula);
-
-                statement.executeUpdate();
-            }
-
-            // Informar al cliente sobre la creación exitosa de la entrada
-            response.getWriter().write("La entrada ha sido creada exitosamente");
-            response.sendRedirect("gestion.jsp");
-        } catch (SQLException e) {
-            throw new ServletException("Error en la inserción de entrada: " + e.getMessage());
+        } catch (SQLException ex) {
+            Logger.getLogger(GestionEntradasServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -230,15 +245,39 @@ public class GestionEntradasServlet extends HttpServlet {
 
                 response.setContentType("text/plain");
                 if (deletedRows > 0) {
-                response.getWriter().write("Entrada eliminada con ID: " + idEntrada);
-            } else {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Establecer código de estado 400 Bad Request
-                response.getWriter().write("La entrada no se encontró o no se pudo eliminar");
+                    response.getWriter().write("Entrada eliminada con ID: " + idEntrada);
+                } else {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Establecer código de estado 400 Bad Request
+                    response.getWriter().write("La entrada no se encontró o no se pudo eliminar");
+                }
             }
+        } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // Establecer código de estado 500 Internal Server Error
+            response.getWriter().write("Error al eliminar entrada: " + e.getMessage());
         }
-    } catch (SQLException e) {
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // Establecer código de estado 500 Internal Server Error
-        response.getWriter().write("Error al eliminar entrada: " + e.getMessage());
     }
+
+   
+
+    private boolean modificarEntrada(String numero_sala, String nombre_pelicula, int fila, int columna) throws ServletException {
+        boolean modificacionExitosa = false;
+        try {
+
+            String query = "UPDATE entradas SET numero_sala=?, nombre_pelicula=? , fila=?, columna=? WHERE nombre_pelicula=?";
+            try (PreparedStatement statement = this.conn.prepareStatement(query)) {
+                statement.setString(1, numero_sala);
+                statement.setString(2, nombre_pelicula);
+                statement.setInt(3, fila);
+                statement.setInt(4, columna);
+
+                int filasActualizadas = statement.executeUpdate();
+                if (filasActualizadas > 0) {
+                    modificacionExitosa = true;
+                }
+            }
+        } catch (SQLException e) {
+            throw new ServletException("Error al modificar entrada: " + e.getMessage());
+        }
+        return modificacionExitosa;
     }
 }

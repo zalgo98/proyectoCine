@@ -71,7 +71,8 @@ public class GestionPeliculasServlet extends HttpServlet {
         boolean peliculaExiste = verificarExistenciaPelicula(nombrePelicula);
 
         if (peliculaExiste) {
- boolean modificacionExitosa = modificarPelicula(nombrePelicula, sinopsis, paginaOficial, tituloOriginal, genero, nacionalidad, duracion, anno, distribuidora, director, actores, clasificacionEdad, otrosDatos);
+            
+                boolean modificacionExitosa = modificarPelicula(nombrePelicula, sinopsis, paginaOficial, tituloOriginal, genero, nacionalidad, duracion, anno, distribuidora, director, actores, clasificacionEdad, otrosDatos);
 
         if (modificacionExitosa) {
             response.getWriter().write("La pelicula se ha modificado");
@@ -120,7 +121,7 @@ private boolean verificarExistenciaPelicula(String nombrePelicula) throws Servle
             if (resultSet.next()) {
                 // Si se encuentra al menos una fila, significa que la película ya existe
                 existe = true;
-                throw new ServletException("Error en la inserción de película:");
+                
             }
         }
     } catch (SQLException e) {
