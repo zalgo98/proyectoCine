@@ -58,7 +58,7 @@ public class GestionEntradasServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        String idEntrada = request.getParameter("id");
         String numero_sala = request.getParameter("numero_sala");
         String nombre_pelicula = request.getParameter("nombre_pelicula");
         int fila = Integer.parseInt(request.getParameter("fila"));
@@ -78,9 +78,10 @@ public class GestionEntradasServlet extends HttpServlet {
                   
             asientoAsignado = verificarAsientoAsignado(this.conn, numero_sala, fila, columna);
 
-            if (asientoAsignado) {
-
-                boolean modificacionExitosa = modificarEntrada(numero_sala, nombre_pelicula, fila, columna);
+            if (idEntrada != null && !idEntrada.isEmpty()) {
+                
+               int id= Integer.parseInt(idEntrada);
+                boolean modificacionExitosa = modificarEntrada(id, numero_sala, nombre_pelicula, fila, columna);
 
                 if (modificacionExitosa) {
                     response.getWriter().write("La entrada se ha modificado");
@@ -259,17 +260,17 @@ public class GestionEntradasServlet extends HttpServlet {
 
    
 
-    private boolean modificarEntrada(String numero_sala, String nombre_pelicula, int fila, int columna) throws ServletException {
+    private boolean modificarEntrada(int id, String numero_sala, String nombre_pelicula, int fila, int columna) throws ServletException {
         boolean modificacionExitosa = false;
         try {
 
-            String query = "UPDATE entradas SET numero_sala=?, nombre_pelicula=? , fila=?, columna=? WHERE nombre_pelicula=?";
+            String query = "UPDATE entradas SET numero_sala=?, fila=?, columna=? , nombre_pelicula=? WHERE id =?";
             try (PreparedStatement statement = this.conn.prepareStatement(query)) {
                 statement.setString(1, numero_sala);
-                statement.setString(2, nombre_pelicula);
-                statement.setInt(3, fila);
-                statement.setInt(4, columna);
-
+                statement.setInt(2, fila);
+                statement.setInt(3, columna);
+                statement.setString(4, nombre_pelicula);
+                 statement.setInt(5, id);
                 int filasActualizadas = statement.executeUpdate();
                 if (filasActualizadas > 0) {
                     modificacionExitosa = true;

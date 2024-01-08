@@ -11,15 +11,17 @@
 </head>
 <body>
     <h1>Modificar sala</h1>
-    <form action="GestionSalasServlet" method="post">
+    <form action="GestionEntradasServlet" method="post">
         <!-- Menú desplegable para seleccionar el número de sala -->
-        <label for="numero_sala">Número de sala:</label>
-        <select name="numero_sala" id="numero_sala">
-            <option value="">Seleccionar número de sala</option> <!-- Opción en blanco -->
+        <label for="Id_entradas">Id de la entrada:</label>
+        <select name="Id_entradas" id="Id_entradas">
+            <option value="">Seleccionar número de id de entrada</option> <!-- Opción en blanco -->
             <!-- Aquí se cargarán dinámicamente las salas desde la base de datos -->
         </select>
         <br>
         <!-- Resto de los campos del formulario -->
+        Número de sala:<br>
+        <input type="number" name="numero_sala"><br><br>
         Nombre de la Película:<br>
         <input type="text" name="nombre_pelicula"><br><br>
         Número de Filas:<br>
@@ -36,12 +38,12 @@
         }
 
         // Cargar los números de las salas desde el servidor
-        fetch('GestionSalasServlet')
+         fetch('GestionEntradasServlet')
             .then(response => {
                 if (response.ok) {
                     return response.text();
                 } else {
-                    throw new Error('Error al obtener las salas');
+                    throw new Error('Error al obtener las entradas');
                 }
             })
             .then(data => {
@@ -53,26 +55,25 @@
                 const rows = tempDiv.querySelectorAll('tr');
 
                 // Obtener el select para añadir las opciones
-                const select = document.getElementById('numero_sala');
+                const select = document.getElementById('Id_entradas');
 
                 // Agregar la opción en blanco al principio
                 const blankOption = document.createElement('option');
-               
                 select.appendChild(blankOption);
 
-                // Iterar sobre las filas y extraer los números de las salas
+                // Iterar sobre las filas y extraer los IDs de las entradas
                 rows.forEach(row => {
                     const columns = row.querySelectorAll('td');
                     if (columns.length > 0) {
-                        const numero_sala = columns[0].textContent;
+                        const idEntrada = columns[0].textContent;
                         const option = document.createElement('option');
-                        option.value = numero_sala;
-                        option.textContent = numero_sala;
+                        option.value = idEntrada;
+                        option.textContent = idEntrada;
                         select.appendChild(option);
                     }
                 });
             })
-            .catch(error => console.error('Error al obtener salas:', error));
+            .catch(error => console.error('Error al obtener IDs de entradas:', error));
     </script>
 </body>
 </html>
