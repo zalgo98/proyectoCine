@@ -7,10 +7,10 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <html>
 <head>
-    <title>Formulario para modificar sala</title>
+    <title>Formulario para modificar entrada</title>
 </head>
 <body>
-    <h1>Modificar sala</h1>
+    <h1>Modificar entrada</h1>
     <form action="GestionEntradasServlet" method="post">
         <!-- Menú desplegable para seleccionar el número de sala -->
         <label for="Id_entradas">Id de la entrada:</label>
@@ -29,7 +29,7 @@
         Número de Columnas:<br>
         <input type="number" name="columnas"><br><br>
         
-        <input type="submit" value="Modificar sala">
+        <input type="submit" value="Modificar Entrada">
     </form>
     <button onclick="irAtras()">Atrás</button>
     <script>
@@ -59,7 +59,7 @@
 
                 // Agregar la opción en blanco al principio
                 const blankOption = document.createElement('option');
-                select.appendChild(blankOption);
+                
 
                 // Iterar sobre las filas y extraer los IDs de las entradas
                 rows.forEach(row => {

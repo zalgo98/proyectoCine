@@ -79,7 +79,7 @@ public class GestionEntradasServlet extends HttpServlet {
             asientoAsignado = verificarAsientoAsignado(this.conn, numero_sala, fila, columna);
 
             if (idEntrada != null && !idEntrada.isEmpty()) {
-                
+                response.getWriter().write("La entrada se ha modificado");
                int id= Integer.parseInt(idEntrada);
                 boolean modificacionExitosa = modificarEntrada(id, numero_sala, nombre_pelicula, fila, columna);
 
@@ -234,6 +234,7 @@ public class GestionEntradasServlet extends HttpServlet {
 
     @Override
     public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
         String idEntrada = request.getParameter("idEntrada");
 
         try {
@@ -263,7 +264,7 @@ public class GestionEntradasServlet extends HttpServlet {
     private boolean modificarEntrada(int id, String numero_sala, String nombre_pelicula, int fila, int columna) throws ServletException {
         boolean modificacionExitosa = false;
         try {
-
+            
             String query = "UPDATE entradas SET numero_sala=?, fila=?, columna=? , nombre_pelicula=? WHERE id =?";
             try (PreparedStatement statement = this.conn.prepareStatement(query)) {
                 statement.setString(1, numero_sala);
